@@ -21,7 +21,7 @@ export default function Register() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="p-5 max-w-md mx-auto">
       <h2 className="text-xl font-bold mb-4">Register</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <input
