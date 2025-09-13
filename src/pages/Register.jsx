@@ -1,53 +1,71 @@
 import { useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await axios.post("http://localhost:8081/api/auth/register", form);
-      alert("User registered successfully!");
-      setForm({ name: "", email: "", password: "" });
+      const res = await fetch("http://localhost:8081/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (res.ok) {
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      } else {
+        const error = await res.text();
+        alert(error);
+      }
     } catch (err) {
       console.error(err);
-      alert("Error registering user.");
+      alert("Something went wrong!");
     }
   };
 
   return (
-    <div className="p-5 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">Register</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-lg rounded-lg p-8 w-96"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         <input
           name="name"
+          type="text"
           placeholder="Name"
-          value={form.name}
+          className="w-full mb-4 p-2 border rounded"
           onChange={handleChange}
-          className="border p-2"
+          required
         />
         <input
           name="email"
           type="email"
           placeholder="Email"
-          value={form.email}
+          className="w-full mb-4 p-2 border rounded"
           onChange={handleChange}
-          className="border p-2"
+          required
         />
         <input
           name="password"
           type="password"
           placeholder="Password"
-          value={form.password}
+          className="w-full mb-4 p-2 border rounded"
           onChange={handleChange}
-          className="border p-2"
+          required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 mt-2">
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        >
           Register
         </button>
       </form>

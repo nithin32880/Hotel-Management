@@ -1,58 +1,17 @@
-import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
-function Home() {
-  const [city, setCity] = useState("");
-  const [hotels, setHotels] = useState([]);
-
-  const searchHotels = async () => {
-    const res = await axios.get(`http://localhost:8081/api/hotels?city=${city}`);
-    setHotels(res.data);
-  };
-
+export default function Home() {
   return (
-    <div className="p-4">
-      {/* Header with Login/Register */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Search Hotels</h1>
-        <div className="flex gap-2">
-          <Link to="/login" className="bg-green-500 text-white px-4 py-2 rounded">
-            Login
-          </Link>
-          <Link to="/register" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Register
-          </Link>
-        </div>
-      </div>
-
-      {/* Search Box */}
-      <div className="mb-4">
-        <input
-          className="border p-2 mr-2"
-          value={city}
-          onChange={e => setCity(e.target.value)}
-          placeholder="Enter city"
-        />
-        <button className="bg-blue-500 text-white p-2 rounded" onClick={searchHotels}>
-          Search
-        </button>
-      </div>
-
-      {/* Hotel List */}
-      <div className="mt-4">
-        {hotels.map(hotel => (
-          <div key={hotel.id} className="p-4 border rounded mb-2">
-            <h2 className="text-lg font-bold">{hotel.name}</h2>
-            <p>{hotel.address}</p>
-            <Link className="text-blue-600" to={`/hotel/${hotel.id}`}>
-              View Rooms
-            </Link>
-          </div>
-        ))}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+      <h1 className="text-4xl font-bold mb-6">🏨 Welcome to Hotel Booking</h1>
+      <div className="space-x-4">
+        <Link to="/login" className="px-6 py-2 bg-white text-blue-600 font-semibold rounded-lg shadow-md hover:bg-gray-200">
+          Login
+        </Link>
+        <Link to="/register" className="px-6 py-2 bg-yellow-400 text-black font-semibold rounded-lg shadow-md hover:bg-yellow-300">
+          Register
+        </Link>
       </div>
     </div>
   );
 }
-
-export default Home;

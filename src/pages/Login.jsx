@@ -1,46 +1,68 @@
 import { useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post("http://localhost:8081/api/auth/login", form);
-      alert(res.data); // Shows "Login successful" or "Invalid credentials"
-      setForm({ email: "", password: "" });
+      const res = await fetch("http://localhost:8081/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        alert(err);
+        return;
+      }
+
+      const data = await res.json();
+
+      // ✅ Redirect based on role
+      if (data.role === "CUSTOMER") navigate("/customer/dashboard");
+      else if (data.role === "MANAGER") navigate("/manager/dashboard");
+      else if (data.role === "ADMIN") navigate("/admin/dashboard");
+
+      alert(`Welcome ${data.name}! Login successful.`);
     } catch (err) {
-      console.error(err);
-      alert("Error logging in.");
+      console.error("Login error:", err);
+      alert("Something went wrong!");
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white shadow-lg rounded-lg p-8 w-96"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <input
-          name="email"
           type="email"
           placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="border p-2"
+          className="w-full mb-4 p-2 border rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
-          name="password"
           type="password"
           placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="border p-2"
+          className="w-full mb-4 p-2 border rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 mt-2">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
           Login
         </button>
       </form>
